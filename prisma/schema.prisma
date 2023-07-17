@@ -1,0 +1,145 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+    provider        = "prisma-client-js"
+    previewFeatures = ["jsonProtocol"]
+}
+
+datasource db {
+    provider = "postgresql"
+    // NOTE: When using mysql or sqlserver, uncomment the @db.Text annotations in model Account below
+    // Further reading:
+    // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
+    // https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#string
+    url      = env("DATABASE_URL")
+}
+
+// Necessary for Next auth
+model Account {
+    id                String  @id @default(cuid())
+    userId            String
+    type              String
+    provider          String
+    providerAccountId String
+    refresh_token     String? // @db.Text
+    access_token      String? // @db.Text
+    expires_at        Int?
+    token_type        String?
+    scope             String?
+    id_token          String? // @db.Text
+    session_state     String?
+    user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@unique([provider, providerAccountId])
+}
+
+model Session {
+    id           String   @id @default(cuid())
+    sessionToken String   @unique
+    userId       String
+    expires      DateTime
+    user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model User {
+    id            String    @id @default(cuid())
+    name          String?
+    email         String?   @unique
+    emailVerified DateTime?
+    image         String?
+    accounts      Account[]
+    sessions      Session[]
+    // UserProfile   UserProfile? @relation("User_UserProfile")
+    // roles         UserRole[]   @relation("User_UserRole")
+    booking       Booking?  @relation(name: "User_Booking")
+}
+
+model VerificationToken {
+    identifier String
+    token      String   @unique
+    expires    DateTime
+
+    @@unique([identifier, token])
+}
+
+// user
+
+// model UserProfile {
+//     id        String    @id @default(cuid())
+//     firstName String?
+//     lastName  String?
+//     username  String?
+//     bio       String?
+//     image     String?
+//     user      User      @relation(fields: [userId], references: [id], onDelete: Cascade, name: "User_UserProfile")
+//     userId    String    @unique
+//     bookings  Booking[] @relation("UserProfile_Booking")
+//     createdAt DateTime  @default(now())
+//     updatedAt DateTime  @updatedAt
+// }
+
+// model UserRole {
+//     id     String @id @default(cuid())
+//     userId String
+//     user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, name: "User_UserRole")
+//     role   Role
+// }
+
+// enum Role {
+//     ADMIN
+//     USER
+// }
+
+// custom
+
+model Booking {
+    id                   String        @id @default(cuid())
+    user                 User?         @relation(fields: [userId], references: [id], name: "User_Booking")
+    userId               String?       @unique
+    firstName            String
+    lastName             String
+    email                String
+    phone                String
+    status               BookingStatus
+    insuranceCompany     String?
+    clainNumber          String?
+    cardIdImage          File?         @relation(name: "Booking_CardIdImage")
+    greenCardImage       File?         @relation(name: "Booking_GreenCardImage")
+    immaCertificateImage File?         @relation(name: "Booking_ImmaCertificate")
+    createdAt            DateTime      @default(now())
+    updatedAt            DateTime      @updatedAt
+}
+
+enum BookingStatus {
+    PENDING
+    CONFIRMED
+    CANCELLED
+    COMPLETED
+}
+
+model File {
+    id                     String   @id @default(cuid())
+    bucket                 String
+    mimeType               String
+    key                    String   @unique
+    size                   Int
+    cardIdImage            Booking? @relation(fields: [cardIdImageId], references: [id], name: "Booking_CardIdImage")
+    cardIdImageId          String?  @unique
+    greenCardImage         Booking? @relation(fields: [greenCardImageId], references: [id], name: "Booking_GreenCardImage")
+    greenCardImageId       String?  @unique
+    immaCertificateImage   Booking? @relation(fields: [immaCertificateImageId], references: [id], name: "Booking_ImmaCertificate")
+    immaCertificateImageId String?  @unique
+    createdAt              DateTime @default(now())
+    updatedAt              DateTime @updatedAt
+}
+
+model tempFile {
+    id        String   @id @default(cuid())
+    bucket    String
+    mimeType  String
+    key       String   @unique
+    size      Int
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
