@@ -1,9 +1,10 @@
+// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 import { type Session } from "next-auth";
 import { SessionProvider } from "next-auth/react";
 import { type AppType } from "next/app";
 import { api, RouterOutputs } from "@/utils/api";
 import Header from "@/components/Header";
-import SelectStatus from "@/components/elements/select";
+import SelectStatus from "@/components/elements/Select";
 import type { GetBookingResponseType } from "@/utils/types/app";
 
 
@@ -58,25 +59,25 @@ const MyApp: AppType = () => {
                                 return (
                                     <tr key={i} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
                                         <td className="px-6 py-4 whitespace-nowrap dark:text-white">
-                                            {booking.firstName}
+                                            {booking && booking?.firstName}
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap dark:text-white">
-                                            {booking.lastName}
+                                            {booking?.lastName}
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap dark:text-white">
-                                            {booking.phone}
+                                            {booking?.phone}
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap dark:text-white">
-                                            {booking.email}
+                                            {booking?.email}
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap dark:text-white">
-                                            {booking.insuranceCompany}
+                                            {booking?.insuranceCompany}
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap dark:text-white">
-                                            {booking.claimNumber}
+                                            {booking?.claimNumber}
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap dark:text-white">
-                                            <a href={"/" + booking.cardIdImage.bucket + "/" + booking.cardIdImage.key} target="_blank" className="text-blue-500" > watch me </a>
+                                            <a href={"/" + booking?.cardIdImage.bucket + "/" + booking?.cardIdImage.key} target="_blank" className="text-blue-500" > watch me </a>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap dark:text-white">
                                             <a href={"/" + booking.immaCertificateImage.bucket + "/" + booking.immaCertificateImage.key} className="text-blue-500" target="_blank"> watch me </a>

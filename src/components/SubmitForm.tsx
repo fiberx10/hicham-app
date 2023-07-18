@@ -48,7 +48,7 @@ const SubmitForm = () => {
       return;
     }
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-    const booking = bookingMutation.mutate({
+    bookingMutation.mutate({
       firstName: data.firstName,
       lastName: data.lastName,
       email: data.email,
@@ -65,47 +65,55 @@ const SubmitForm = () => {
         fileId: greenCardImage as string,
       }
     })
-    if (booking) {
-      setIsSubmitted(true);
-    }
   }
 
   const handleCardIdImage = async (e: ChangeEvent<HTMLInputElement>) => {
     const formData = new FormData()
-    formData.append('file', e.target.files[0])
+    if (!e.target.files) {
+      return;
+    }
+    e?.target?.files && formData.append('file', e?.target?.files[0] as File)
     const res = await fetch('/api/file/upload', {
       method: 'POST',
       body: formData
     })
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const data = await res.json()
-    console.log("file uploaded id  : " + data)
-    setCardIdImage(data.fileId)
+    const data = await res.json() as { fileId: string };
+    // console.log("file uploaded id  : " + data)
+    setCardIdImage(data?.fileId)
   }
 
   const handleImmaCertificateImage = async (e: ChangeEvent<HTMLInputElement>) => {
     const formData = new FormData()
-    formData.append('file', e.target.files[0])
+
+    if (!e.target.files) {
+      return;
+    }
+
+    formData.append('file', e.target.files[0] as File)
     const res = await fetch('/api/file/upload', {
       method: 'POST',
       body: formData
     })
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const data = await res.json()
-    console.log("file uploaded id : " + data)
-    setImmaCertificateImage(data.fileId)
+    const data = await res.json() as { fileId: string };
+    // console.log("file uploaded id : " + data)
+    setImmaCertificateImage(data.fileId);
   }
 
   const handleGreenCardImage = async (e: ChangeEvent<HTMLInputElement>) => {
     const formData = new FormData()
-    formData.append('file', e.target.files[0])
+    if (!e.target.files) {
+      return;
+    }
+    formData.append('file', e.target.files[0] as File)
     const res = await fetch('/api/file/upload', {
       method: 'POST',
       body: formData
     })
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const data = await res.json()
-    console.log("file uploaded id : " + data)
+    const data = await res.json() as { fileId: string };
+    // console.log("file uploaded id : " + data)
     setGreenCardImage(data.fileId);
   }
 
@@ -123,6 +131,7 @@ const SubmitForm = () => {
               contact you within 24 hours.</p>
           </div >
         ) : (
+          // eslint-disable-next-line @typescript-eslint/no-misused-promises
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-8 divide-y divide-gray-200">
             <div id="" className="space-y-12">
 
@@ -183,17 +192,25 @@ const SubmitForm = () => {
                     <label htmlFor="cover-photo" className="block text-sm font-medium leading-6 text-gray-900">Carte Nationale</label>
                     <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
                       <div className="text-center">
-                        <svg className="mx-auto h-12 w-12 text-gray-300" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                          <path fill-rule="evenodd" d="M1.5 6a2.25 2.25 0 012.25-2.25h16.5A2.25 2.25 0 0122.5 6v12a2.25 2.25 0 01-2.25 2.25H3.75A2.25 2.25 0 011.5 18V6zM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0021 18v-1.94l-2.69-2.689a1.5 1.5 0 00-2.12 0l-.88.879.97.97a.75.75 0 11-1.06 1.06l-5.16-5.159a1.5 1.5 0 00-2.12 0L3 16.061zm10.125-7.81a1.125 1.125 0 112.25 0 1.125 1.125 0 01-2.25 0z" clip-rule="evenodd" />
-                        </svg>
-                        <div className="mt-4 flex text-sm leading-6 text-gray-600">
-                          <label htmlFor="card-id-file-upload" className="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500">
-                            <span>Upload a file</span>
-                            <input id="card-id-file-upload" onChange={handleCardIdImage} type="file" className="sr-only" />
-                          </label>
-                          <p className="pl-1">or drag and drop</p>
-                        </div>
-                        <p className="text-xs leading-5 text-gray-600">PNG, JPG, GIF up to 10MB</p>
+                        {
+                          cardIdImage ? <h1 className="text-3xl font-semibold text-gray-900 text-center"
+                          >uploaded !</h1> : (
+                            <>
+                              <svg className="mx-auto h-12 w-12 text-gray-300" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                                <path fill-rule="evenodd" d="M1.5 6a2.25 2.25 0 012.25-2.25h16.5A2.25 2.25 0 0122.5 6v12a2.25 2.25 0 01-2.25 2.25H3.75A2.25 2.25 0 011.5 18V6zM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0021 18v-1.94l-2.69-2.689a1.5 1.5 0 00-2.12 0l-.88.879.97.97a.75.75 0 11-1.06 1.06l-5.16-5.159a1.5 1.5 0 00-2.12 0L3 16.061zm10.125-7.81a1.125 1.125 0 112.25 0 1.125 1.125 0 01-2.25 0z" clip-rule="evenodd" />
+                              </svg>
+                              <div className="mt-4 flex text-sm leading-6 text-gray-600">
+                                <label htmlFor="card-id-file-upload" className="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500">
+                                  <span>Upload a file</span>
+                                  <input id="card-id-file-upload" onChange={handleCardIdImage} type="file" className="sr-only" />
+                                </label>
+                                <p className="pl-1">or drag and drop</p>
+                              </div>
+                              <p className="text-xs leading-5 text-gray-600">PNG, JPG, GIF up to 10MB</p>
+                            </>
+                          )
+                        }
+
                       </div>
                     </div>
                   </div>
@@ -203,17 +220,24 @@ const SubmitForm = () => {
                     <label htmlFor="cover-photo" className="block text-sm font-medium leading-6 text-gray-900">Certificat d immatriculation</label>
                     <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
                       <div className="text-center">
-                        <svg className="mx-auto h-12 w-12 text-gray-300" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                          <path fill-rule="evenodd" d="M1.5 6a2.25 2.25 0 012.25-2.25h16.5A2.25 2.25 0 0122.5 6v12a2.25 2.25 0 01-2.25 2.25H3.75A2.25 2.25 0 011.5 18V6zM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0021 18v-1.94l-2.69-2.689a1.5 1.5 0 00-2.12 0l-.88.879.97.97a.75.75 0 11-1.06 1.06l-5.16-5.159a1.5 1.5 0 00-2.12 0L3 16.061zm10.125-7.81a1.125 1.125 0 112.25 0 1.125 1.125 0 01-2.25 0z" clip-rule="evenodd" />
-                        </svg>
-                        <div className="mt-4 flex text-sm leading-6 text-gray-600">
-                          <label htmlFor="imma-cert-file-upload" className="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500">
-                            <span>Upload a file</span>
-                            <input id="imma-cert-file-upload" onChange={handleImmaCertificateImage} type="file" className="sr-only" />
-                          </label>
-                          <p className="pl-1">or drag and drop</p>
-                        </div>
-                        <p className="text-xs leading-5 text-gray-600">PNG, JPG, GIF up to 10MB</p>
+                        {
+                          immaCertificateImage ? <h1 className="text-3xl font-semibold text-gray-900 text-center"
+                          >uploaded !</h1> : (
+                            <>
+                              <svg className="mx-auto h-12 w-12 text-gray-300" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                                <path fill-rule="evenodd" d="M1.5 6a2.25 2.25 0 012.25-2.25h16.5A2.25 2.25 0 0122.5 6v12a2.25 2.25 0 01-2.25 2.25H3.75A2.25 2.25 0 011.5 18V6zM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0021 18v-1.94l-2.69-2.689a1.5 1.5 0 00-2.12 0l-.88.879.97.97a.75.75 0 11-1.06 1.06l-5.16-5.159a1.5 1.5 0 00-2.12 0L3 16.061zm10.125-7.81a1.125 1.125 0 112.25 0 1.125 1.125 0 01-2.25 0z" clip-rule="evenodd" />
+                              </svg>
+                              <div className="mt-4 flex text-sm leading-6 text-gray-600">
+                                <label htmlFor="imma-cert-file-upload" className="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500">
+                                  <span>Upload a file</span>
+                                  <input id="imma-cert-file-upload" onChange={handleImmaCertificateImage} type="file" className="sr-only" />
+                                </label>
+                                <p className="pl-1">or drag and drop</p>
+                              </div>
+                              <p className="text-xs leading-5 text-gray-600">PNG, JPG, GIF up to 10MB</p>
+                            </>
+                          )
+                        }
                       </div>
                     </div>
                   </div>
@@ -224,17 +248,24 @@ const SubmitForm = () => {
                     <label htmlFor="cover-photo" className="block text-sm font-medium leading-6 text-gray-900">Carte Verte</label>
                     <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
                       <div className="text-center">
-                        <svg className="mx-auto h-12 w-12 text-gray-300" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                          <path fill-rule="evenodd" d="M1.5 6a2.25 2.25 0 012.25-2.25h16.5A2.25 2.25 0 0122.5 6v12a2.25 2.25 0 01-2.25 2.25H3.75A2.25 2.25 0 011.5 18V6zM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0021 18v-1.94l-2.69-2.689a1.5 1.5 0 00-2.12 0l-.88.879.97.97a.75.75 0 11-1.06 1.06l-5.16-5.159a1.5 1.5 0 00-2.12 0L3 16.061zm10.125-7.81a1.125 1.125 0 112.25 0 1.125 1.125 0 01-2.25 0z" clip-rule="evenodd" />
-                        </svg>
-                        <div className="mt-4 flex text-sm leading-6 text-gray-600">
-                          <label htmlFor="green-card-file-upload" className="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500">
-                            <span>Upload a file</span>
-                            <input id="green-card-file-upload" onChange={handleGreenCardImage} type="file" className="sr-only" />
-                          </label>
-                          <p className="pl-1">or drag and drop</p>
-                        </div>
-                        <p className="text-xs leading-5 text-gray-600">PNG, JPG, GIF up to 10MB</p>
+                        {
+                          greenCardImage ? <h1 className="text-3xl font-semibold text-gray-900 text-center"
+                          >uploaded !</h1> : (
+                            <>
+                              <svg className="mx-auto h-12 w-12 text-gray-300" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                                <path fill-rule="evenodd" d="M1.5 6a2.25 2.25 0 012.25-2.25h16.5A2.25 2.25 0 0122.5 6v12a2.25 2.25 0 01-2.25 2.25H3.75A2.25 2.25 0 011.5 18V6zM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0021 18v-1.94l-2.69-2.689a1.5 1.5 0 00-2.12 0l-.88.879.97.97a.75.75 0 11-1.06 1.06l-5.16-5.159a1.5 1.5 0 00-2.12 0L3 16.061zm10.125-7.81a1.125 1.125 0 112.25 0 1.125 1.125 0 01-2.25 0z" clip-rule="evenodd" />
+                              </svg>
+                              <div className="mt-4 flex text-sm leading-6 text-gray-600">
+                                <label htmlFor="green-card-file-upload" className="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500">
+                                  <span>Upload a file</span>
+                                  <input id="green-card-file-upload" onChange={handleGreenCardImage} type="file" className="sr-only" />
+                                </label>
+                                <p className="pl-1">or drag and drop</p>
+                              </div>
+                              <p className="text-xs leading-5 text-gray-600">PNG, JPG, GIF up to 10MB</p>
+                            </>
+                          )
+                        }
                       </div>
                     </div>
                   </div>

@@ -20,23 +20,31 @@ const post = (req: NextApiRequest, res: NextApiResponse) => {
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
     async function (_err, _fields: formidable.Fields, files: formidable.Files) {
       console.log("files : " + JSON.stringify(files));
-      const file = saveFile(files.file[0] as formidable.File);
-      try {
-        const { id: createdFileId } = await prisma.tempFile.create({
-          data: {
-            bucket: "temp",
-            key: file?.name as string,
-            size: file?.size as number,
-            mimeType: file?.mimetype as string,
-          },
+      if (!files?.file) {
+      }
+      if (files?.file) {
+        const file = saveFile(files?.file[0] as formidable.File);
+        try {
+          const { id: createdFileId } = await prisma.tempFile.create({
+            data: {
+              bucket: "temp",
+              key: file?.name as string,
+              size: file?.size as number,
+              mimeType: file?.mimetype as string,
+            },
+          });
+          console.log("created File Id : " + createdFileId);
+          return res.status(200).json({
+            fileId: createdFileId,
+          });
+        } catch (err) {
+          console.log(err);
+          return res.status(500).json(err);
+        }
+      } else {
+        return res.status(400).json({
+          error: "No file uploaded",
         });
-        console.log("created File Id : " + createdFileId);
-        return res.status(200).json({
-          fileId: createdFileId,
-        });
-      } catch (err) {
-        console.log(err);
-        return res.status(500).json(err);
       }
     }
   );
@@ -63,7 +71,8 @@ const saveFile = (file: formidable.File) => {
   }
 };
 
-export default (req, res) => {
+// eslint-disable-next-line import/no-anonymous-default-export
+export default (req: NextApiRequest, res: NextApiResponse) => {
   req.method === "POST"
     ? post(req, res)
     : req.method === "PUT"
